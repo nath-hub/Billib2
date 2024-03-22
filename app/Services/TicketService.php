@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Math;
 
 class TicketService
 {
@@ -99,9 +100,17 @@ class TicketService
     public function showTicketByMonth(User $user)
     {
 
-        $ticket = Ticket::with('articles')->orderBy('created_at')->user_id($user->id)->get()->groupBy(function($data) {
+        $ticket = Ticket::orderBy('created_at')->user_id($user->id)->get()->groupBy(function($data) {
             return Carbon::parse($data->created_at)->format('F');
         });
+
+        foreach ($ticket as  $data) {
+            foreach ($data as $in){ 
+                $log = log10($in['total_payable']); 
+                $in['log'] = $log; 
+            }
+              
+          } 
 
         return $ticket;
     }
@@ -114,16 +123,23 @@ class TicketService
      * 
      * @return array
      */
-    public function showTicketByWeek(User $user): array
-    {
-
-        $ticket = Ticket::with('articles')->orderBy('created_at')->user_id($user->id)->get()->groupBy(function($data) {
+    public function showTicketByWeek(User $user)
+    { 
+        
+        
+        $ticket = Ticket::orderBy('created_at')->user_id($user->id)->get()->groupBy(function($data) {
             return Carbon::parse($data->created_at)->format('W');
         });
+         
+        foreach ($ticket as  $data) {
+            foreach ($data as $in){ 
+                $log = log10($in['total_payable']); 
+                $in['log'] = $log; 
+            }
+              
+          } 
 
-        return [
-            'ticket' => $ticket
-        ];
+        return $ticket;
     }
 
     
